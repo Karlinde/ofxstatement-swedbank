@@ -4,16 +4,15 @@ from ofxstatement.plugin import Plugin
 from ofxstatement.statement import Statement, StatementLine, generate_transaction_id
 
 
-class LansforsakringarPlugin(Plugin):
-    """Länsförsäkringar <https://www.lansforsakringar.se>"""
+class SwedbankXlsPlugin(Plugin):
 
     def get_parser(self, filename):
-        bank_id = self.settings.get('bank', 'ELLFSESS')
+        bank_id = self.settings.get('bank', 'SWEDSESS')
         account_id = self.settings.get('account')
-        return LansforsakringarParser(filename, bank_id, account_id)
+        return SwedbankParser(filename, bank_id, account_id)
 
 
-class LansforsakringarParser(StatementParser):
+class SwedbankParser(StatementParser):
     statement = Statement(currency='SEK')
 
     def __init__(self, filename, bank_id, account_id):
@@ -31,17 +30,21 @@ class LansforsakringarParser(StatementParser):
     def split_records(self):
         rows = self.sheet.get_rows()
         next(rows)  # statement date
+        next(rows)  # transaction types
+        next(rows)  #empty spacing
+        next(rows)
         next(rows)  # headers
         return rows
 
     def parse_record(self, row):
         self.row_num += 1
         line = StatementLine()
-        line.date = self.parse_datetime(row[0].value)
-        line.date_user = self.parse_datetime(row[1].value)
+        line.date = self.parse_datetime(row[4].value)
+        line.date_user = self.parse_datetime(row[5].value)
         line.refnum = str(self.row_num)
-        line.memo = row[2].value
-        line.amount = row[3].value
+        line.payee = row[6].value
+        # line.memo = row[7].value
+        line.amount = row[8].value
         line.trntype = self.get_type(line)
         line.id = generate_transaction_id(line)
         return line
