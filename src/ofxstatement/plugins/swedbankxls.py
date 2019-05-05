@@ -21,6 +21,7 @@ class SwedbankParser(StatementParser):
         self.statement.account_id = account_id
         self.sheet = None
         self.row_num = 0
+        self.date_format = "%y-%m-%d"
 
     def parse(self):
         with xlrd.open_workbook(self.filename) as book:
@@ -39,11 +40,9 @@ class SwedbankParser(StatementParser):
     def parse_record(self, row):
         self.row_num += 1
         line = StatementLine()
-        line.date = self.parse_datetime(row[4].value)
-        line.date_user = self.parse_datetime(row[5].value)
+        line.date = self.parse_datetime(row[5].value) # Using "transaktionsdatum" instead of "bokföringsdatum"
         line.refnum = str(self.row_num)
-        line.payee = row[6].value
-        # line.memo = row[7].value
+        line.payee = bytes(row[6].value, "utf-8").decode("cp1252")
         line.amount = row[8].value
         line.trntype = self.get_type(line)
         line.id = generate_transaction_id(line)
