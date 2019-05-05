@@ -4,22 +4,22 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
-version = "0.2.0"
+version = "0.1.0"
 
 with open('README.rst', mode='r', encoding='utf-8') as f:
     long_description = f.read()
 
-setup(name='ofxstatement-lansforsakringar',
+setup(name='ofxstatement-swedbank-xls',
       version=version,
-      author="Leonardo Brondani Schenkel",
-      author_email="leonardo@schenkel.net",
-      url="https://github.com/lbschenkel/ofxstatement-lansforsakringar",
-      description="Länsförsäkringar plugin for ofxstatement",
+      author="Karl Linderhed",
+      author_email="code@karlinde.se",
+      url="https://github.com/Karlinde/ofxstatement-swedbank",
+      description="Swedbank xls plugin for ofxstatement",
       long_description=long_description,
       license="GPLv3",
       keywords=["ofx", "banking", "statement"],
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 3 - Alpha',
           'Programming Language :: Python :: 3',
           'Natural Language :: English',
           'Topic :: Office/Business :: Financial :: Accounting',
@@ -31,7 +31,7 @@ setup(name='ofxstatement-lansforsakringar',
       package_dir={'': 'src'},
       namespace_packages=["ofxstatement", "ofxstatement.plugins"],
       entry_points={
-          'ofxstatement': ['lansforsakringar = ofxstatement.plugins.lansforsakringar:LansforsakringarPlugin']
+          'ofxstatement': ['swedbankxls = ofxstatement.plugins.swedbankxls:SwedbankXlsPlugin']
       },
       install_requires=['ofxstatement', 'xlrd'],
       include_package_data=True,
