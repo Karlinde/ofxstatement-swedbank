@@ -9,7 +9,7 @@ importing into GnuCash.
 Forked from `ofxstatement-lansforsakringar`_ by lbschenkel
 
 .. _ofxstatement: https://github.com/kedder/ofxstatement
-.. _lansforsakringar: https://github.com/lbschenkel/ofxstatement-lansforsakringar
+.. _ofxstatement-lansforsakringar: https://github.com/lbschenkel/ofxstatement-lansforsakringar
 
 Usage::
 
