@@ -21,7 +21,7 @@ class SwedbankParser(StatementParser):
         self.statement.account_id = account_id
         self.sheet = None
         self.row_num = 0
-        self.date_format = "%y-%m-%d"
+        self.date_format = "%Y-%m-%d"
 
     def parse(self):
         with xlrd.open_workbook(self.filename) as book:
@@ -30,22 +30,33 @@ class SwedbankParser(StatementParser):
 
     def split_records(self):
         rows = self.sheet.get_rows()
-        next(rows)  # statement date
-        next(rows)  # transaction types
-        next(rows)  #empty spacing
-        next(rows)
+        next(rows)  # title 
+        next(rows)  # name of holder
+        next(rows)  # statement date and transaction types
+        next(rows)  # currency and date range
+        next(rows)  # clearing number
+        next(rows)  # account number
+        next(rows)  # empty spacing
         next(rows)  # headers
         return rows
 
     def parse_record(self, row):
         self.row_num += 1
         line = StatementLine()
-        line.date = self.parse_datetime(row[5].value) # Using "transaktionsdatum" instead of "bokföringsdatum"
-        line.refnum = str(self.row_num)
-        line.payee = bytes(row[6].value, "utf-8").decode("cp1252")
-        line.amount = row[8].value
+        line.date = self.parse_datetime(row[2].value) # Using "transaktionsdag" instead of "bokföringsdag"
+        line.refnum = str(row[0])
+
+        referens = bytes(row[4].value, "utf-8").decode("cp1252")
+        line.payee = referens # Using "Referens" as payee
+
+        beskrivning = bytes(row[5].value, "utf-8").decode("cp1252")
+        if beskrivning != referens : # If the "Beskrivning" column is different from "Referens", then add that as a memo
+            line.memo = bytes(row[5].value, "utf-8").decode("cp1252")
+
+        line.amount = row[6].value
         line.trntype = self.get_type(line)
         line.id = generate_transaction_id(line)
+
         return line
 
     @staticmethod
